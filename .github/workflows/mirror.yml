@@ -1,0 +1,22 @@
+name: MirrorFork
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+jobs:
+  mirror:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Mirror fork to operit2-mogai
+        env:
+          TK: ${{ secrets.MIRROR_TOKEN }}
+        run: |
+          set -e
+          echo "=== cloning fork (inside GitHub network) ==="
+          git clone --bare "https://x-access-token:${TK}@github.com/042xianqi/Operit2.git" src.git
+          cd src.git
+          echo "=== fork HEAD ==="
+          git log --oneline -2 main || true
+          echo "=== pushing to operit2-mogai ==="
+          git push --mirror "https://x-access-token:${TK}@github.com/042xianqi/operit2-mogai.git"
+          echo "=== mirror done ==="
